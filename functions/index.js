@@ -7,7 +7,7 @@ const cors = require('cors');
 app.use(cors());
 
 const { getPosts, makePost } = require('./handlers/posts');
-const { createUser, login, getUserDetails } = require('./handlers/users');
+const { createUser, login, getUserDetails, getAuthenticatedUser } = require('./handlers/users');
 
 // get request for all posts
 // no request body
@@ -28,6 +28,8 @@ app.post("/createUser", FBAuth, createUser);
 // request body: { google_token: ... }
 // returns success message with JWT user token
 app.post("/login", login);
+
+app.get('/user', FBAuth, getAuthenticatedUser);
 
 app.get('/user/:handle', getUserDetails);
 
