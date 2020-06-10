@@ -96,7 +96,11 @@ exports.getUserDetails = (req, res) => {
 };
 
 exports.getAuthenticatedUser = (req, res) => {
-  return res.json({ handle: req.user.handle });
+  if (req.user.handle) {
+    return res.json({ handle: req.user.handle });
+  } else {
+    return res.status(404).json({ error: "User account doesn't exist yet" });
+  }
   // let userData = {};
   // db.doc(`/users/${req.user.handle}`)
   //   .get()
@@ -111,6 +115,6 @@ exports.getAuthenticatedUser = (req, res) => {
   //   })
   //   .catch((err) => {
   //     console.error(err);
-  //     return res.status(404).json({ error: err.code });
+  //
   //   });
 };
