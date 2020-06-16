@@ -8,7 +8,7 @@ firebase.initializeApp(firebaseConfig);
 exports.createUser = (req, res) => {
   db.doc(`/users/${req.body.handle}`)
     .get()
-    .then((doc) => {
+    .then(doc => {
       if (doc.exists) {
         return res.status(400).json({ handle: "This handle is already taken" });
       } else {
@@ -16,7 +16,7 @@ exports.createUser = (req, res) => {
           handle: req.body.handle,
           email: req.user.email,
           createdAt: new Date().toISOString(),
-          userId: req.user.uid,
+          userId: req.user.uid
         };
         return db.doc(`/users/${userCredentials.handle}`).set(userCredentials);
       }
@@ -26,7 +26,7 @@ exports.createUser = (req, res) => {
         .status(201)
         .json({ message: `User handle created successfully` });
     })
-    .catch((err) => {
+    .catch(err => {
       console.error(err);
       return res.status(500).json({ error: err.code });
     });
@@ -43,15 +43,18 @@ exports.login = (req, res) => {
   firebase
     .auth()
     .signInWithCredential(credential)
-    .catch((err) => {
+    .catch(err => {
       console.error(err);
       return res.status(400).json({ error: "login failed" });
     })
-    .then((data) => {
+    .then(data => {
       token = data.user.getIdToken();
-      return db.collection("users").where("email", "==", data.user.email).get();
+      return db
+        .collection("users")
+        .where("email", "==", data.user.email)
+        .get();
     })
-    .then((doc) => {
+    .then(doc => {
       if (doc.exists) {
         // account with handle existed
         return res.json({ token });
@@ -67,7 +70,7 @@ exports.getUserDetails = (req, res) => {
   let userData = {};
   db.doc(`/users/${req.params.handle}`)
     .get()
-    .then((doc) => {
+    .then(doc => {
       if (doc.exists) {
         userData.user = { ...doc.data(), handle: doc.id };
         return db
@@ -79,24 +82,28 @@ exports.getUserDetails = (req, res) => {
         return res.status(404).json({ error: "User not found" });
       }
     })
-    .then((data) => {
+    .then(data => {
       userData.posts = [];
-      data.forEach((doc) => {
+      data.forEach(doc => {
         userData.posts.push({
           ...doc.data(),
-          postId: doc.id,
+          postId: doc.id
         });
       });
       return res.json(userData);
     })
-    .catch((err) => {
+    .catch(err => {
       console.error(err);
       return res.status(500).json({ error: err.code });
     });
 };
 
 exports.getAuthenticatedUser = (req, res) => {
-  return res.json({ handle: req.user.handle });
+  if (req.user.handle) {
+    return res.json({ handle: req.user.handle });
+  } else {
+    return res.status(404).json({ error: "User account doesn't exist yet" });
+  }
   // let userData = {};
   // db.doc(`/users/${req.user.handle}`)
   //   .get()
@@ -111,6 +118,6 @@ exports.getAuthenticatedUser = (req, res) => {
   //   })
   //   .catch((err) => {
   //     console.error(err);
-  //     return res.status(404).json({ error: err.code });
+  //
   //   });
 };
