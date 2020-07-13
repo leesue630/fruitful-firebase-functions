@@ -6,18 +6,25 @@ const FBAuth = require('./util/fbAuth');
 const cors = require('cors');
 app.use(cors());
 
-const { getPosts, makePost } = require('./handlers/posts');
+const { getPosts, makePost, getPostsByFruit, getRankings } = require('./handlers/posts');
 const { createUser, login, getUserDetails, getAuthenticatedUser } = require('./handlers/users');
+const { getAllFruits } = require('./handlers/fruits');
 
 // get request for all posts
 // no request body
 // returns JSON object of all posts
 app.get("/posts", getPosts);
 
+app.get("/posts/:fruit", getPostsByFruit);
+
 // post request for post for user
 // request body: { fruit: ..., userHandle: ... }
 // returns success message with doc.id
 app.post("/post", FBAuth, makePost);
+
+app.get("/ranking", getRankings);
+
+app.get("/fruits", getAllFruits);
 
 // post request for creating user (account) in db
 // request body: { user: ..., handle: ... }
