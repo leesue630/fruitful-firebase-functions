@@ -25,6 +25,9 @@ const { getAllFruits } = require("./handlers/fruits");
 // returns JSON object of all posts
 app.get("/posts", getPosts);
 
+// get request for all posts with specified fruit
+// no request body
+// returns JSON object of all posts with 'fruit'
 app.get("/posts/:fruit", getPostsByFruit);
 
 // post request for post for user
@@ -32,8 +35,14 @@ app.get("/posts/:fruit", getPostsByFruit);
 // returns success message with doc.id
 app.post("/post", FBAuth, makePost);
 
+// get request for fruits ranked by number of posts
+// no request body
+// returns JSON object of all fruits as: { [fruit.name]: # of posts }
 app.get("/rankings", getRankings);
 
+// get request for all fruits
+// no request body
+// returns JSON object of all fruits
 app.get("/fruits", getAllFruits);
 
 // post request for creating user (account) in db
