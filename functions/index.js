@@ -32,7 +32,7 @@ app.get("/posts/:fruit", getPostsByFruit);
 // returns success message with doc.id
 app.post("/post", FBAuth, makePost);
 
-app.get("/ranking", getRankings);
+app.get("/rankings", getRankings);
 
 app.get("/fruits", getAllFruits);
 
