@@ -1,14 +1,24 @@
 const functions = require("firebase-functions");
 const app = require("express")();
 
-const FBAuth = require('./util/fbAuth');
+const FBAuth = require("./util/fbAuth");
 
-const cors = require('cors');
+const cors = require("cors");
 app.use(cors());
 
-const { getPosts, makePost, getPostsByFruit, getRankings } = require('./handlers/posts');
-const { createUser, login, getUserDetails, getAuthenticatedUser } = require('./handlers/users');
-const { getAllFruits } = require('./handlers/fruits');
+const {
+  getPosts,
+  makePost,
+  getPostsByFruit,
+  getRankings,
+} = require("./handlers/posts");
+const {
+  createUser,
+  login,
+  getUserDetails,
+  getAuthenticatedUser,
+} = require("./handlers/users");
+const { getAllFruits } = require("./handlers/fruits");
 
 // get request for all posts
 // no request body
@@ -36,8 +46,8 @@ app.post("/createUser", FBAuth, createUser);
 // returns success message with JWT user token
 app.post("/login", login);
 
-app.get('/user', FBAuth, getAuthenticatedUser);
+app.get("/user", FBAuth, getAuthenticatedUser);
 
-app.get('/user/:handle', getUserDetails);
+app.get("/user/:handle", getUserDetails);
 
 exports.api = functions.https.onRequest(app);

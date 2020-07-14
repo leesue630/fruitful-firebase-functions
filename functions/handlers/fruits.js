@@ -6,7 +6,7 @@ exports.getAllFruits = (req, res) => {
     .select("name")
     .get()
     .then((data) => {
-      return res.json(data);
+      return res.json(data.docs.map((doc) => doc.data()));
     })
     .catch(console.error);
 };

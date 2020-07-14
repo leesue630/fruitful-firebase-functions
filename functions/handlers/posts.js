@@ -21,7 +21,7 @@ exports.makePost = (req, res) => {
     .then((doc) => {
       if (doc.exists) {
         const newPost = {
-          fruit: req.body.fruit,
+          fruit: req.body.fruit.toLowerCase(),
           userHandle: req.user.handle,
           createdAt: new Date().toISOString(),
           comment: req.body.comment,
@@ -45,12 +45,13 @@ exports.makePost = (req, res) => {
 };
 
 exports.getPostsByFruit = (req, res) => {
-  db.doc(`/fruits/${req.params.fruit}`)
+  let fruit = req.params.fruit.toLowerCase();
+  db.doc(`/fruits/${fruit}`)
     .get()
     .then((doc) => {
       if (doc.exists) {
         db.collection("posts")
-          .where("fruit", "==", req.params.fruit)
+          .where("fruit", "==", fruit)
           .orderBy("createdAt", "desc")
           .get()
           .then((data) => {
@@ -68,22 +69,33 @@ exports.getPostsByFruit = (req, res) => {
 };
 
 exports.getRankings = (req, res) => {
-  getAllFruits.then((fruits) => {
-    db.collection("posts")
-      .select(["fruit"])
-      .get()
-      .then((posts) => {
-        let counts = fruits.reduce((acc, fruit) =>
-          Object.assign(acc, { [fruit]: 0 })
-        );
-        for (var i = 0; i < posts.data.length; i++) {
-          counts[fruits.data[i]]++;
-        }
-        return res.json(
-          Object.entries(counts).sort((a, b) =>
-            Math.min(a[Object.keys(a)[0]], b[Object.keys(b)[0]])
-          )
-        );
-      });
-  });
+  db.collection("fruits")
+    .orderBy("name", "asc")
+    .select("name")
+    .get()
+    .then((fruitsData) => {
+      db.collection("posts")
+        .select("fruit")
+        .get()
+        .then((postsData) => {
+          let counts = {};
+          fruitsData.forEach((fruit) => {
+            counts[fruit.id] = 0;
+          });
+          for (var i = 0; i < postsData.size; i++) {
+            counts[postsData.docs[i].get("fruit")]++;
+          }
+          let fruits = [];
+          for (var fruit in counts) {
+            fruits.push({ [fruit]: counts[fruit] });
+          }
+          return res.json(
+            fruits.sort((a, b) => a[Object.keys(a)[0]] - b[Object.keys(b)[0]])
+          );
+        });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "Something went wrong" });
+    });
 };
