@@ -53,12 +53,12 @@ app.get("/user/:handle", getUserDetails);
 exports.api = functions.https.onRequest(app);
 
 exports.updateUserOnPick = functions.firestore
-  .document("picks/{fruit}")
-  .onCreate((snapshot, context) => {
+  .document("picks/{id}")
+  .onCreate((snapshot) => {
     return db
       .doc(`/users/${snapshot.data().userHandle}`)
       .update({
-        currentPick: context.params.fruit,
+        currentPick: snapshot.data().fruit,
       })
       .catch((err) => console.error(err));
   });
@@ -69,14 +69,14 @@ exports.incrementFruitPickCountOnUserUpdate = functions.firestore
     if (snapshot.before.data().hasOwnProperty("currentPick")) {
       db.doc(`/fruits/${snapshot.before.data().currentPick}`)
         .update({
-          currentPick: admin.firestore.FieldValue.decrement(1),
+          pickCount: admin.firestore.FieldValue.decrement(1),
         })
         .catch((err) => console.error(err));
     }
     return db
       .doc(`/fruits/${snapshot.after.data().currentPick}`)
       .update({
-        currentPick: admin.firestore.FieldValue.increment(1),
+        pickCount: admin.firestore.FieldValue.increment(1),
       })
       .catch((err) => console.error(err));
   });
