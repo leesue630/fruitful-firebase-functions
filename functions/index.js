@@ -69,7 +69,7 @@ exports.incrementFruitPickCountOnUserUpdate = functions.firestore
     if (snapshot.before.data().hasOwnProperty("currentPick")) {
       db.doc(`/fruits/${snapshot.before.data().currentPick}`)
         .update({
-          pickCount: admin.firestore.FieldValue.decrement(1),
+          pickCount: admin.firestore.FieldValue.increment(-1),
         })
         .catch((err) => console.error(err));
     }
