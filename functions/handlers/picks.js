@@ -11,7 +11,10 @@ exports.getPicks = (req, res) => {
       });
       return res.json(picks);
     })
-    .catch(console.error);
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
 };
 
 exports.makePick = (req, res) => {
@@ -64,5 +67,9 @@ exports.getPicksByFruit = (req, res) => {
       } else {
         return res.status(404).json({ error: "Invalid fruit" });
       }
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
     });
 };

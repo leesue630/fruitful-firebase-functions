@@ -5,7 +5,14 @@ exports.getAllFruits = (req, res) => {
     .orderBy("name", "asc")
     .get()
     .then((data) => {
-      return res.json(data.docs.map((doc) => doc.data()));
+      return res.json(
+        data.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        })
+      );
     })
-    .catch(console.error);
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
 };
