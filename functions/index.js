@@ -14,7 +14,7 @@ const {
   getUserDetails,
   getAuthenticatedUser,
 } = require("./handlers/users");
-const { getAllFruits } = require("./handlers/fruits");
+const { getAllFruits, getFruitById } = require("./handlers/fruits");
 
 // get request for all picks
 // no request body
@@ -36,18 +36,29 @@ app.post("/pick", FBAuth, makePick);
 // returns JSON object of all fruits
 app.get("/fruits", getAllFruits);
 
-// pick request for creating user (account) in db
+// get request for specific fruit
+// no request body
+// returns JSON object for specified fruit
+app.get("/fruits/:fruitId", getFruitById);
+
+// post request for creating user (account) in db
 // request body: { user: ..., handle: ... }
 // returns success message with 201 status
 app.post("/createUser", FBAuth, createUser);
 
-// pick request for login using google auth credential token
+// post request for login using google auth credential token
 // request body: { google_token: ... }
 // returns success message with JWT user token
 app.post("/login", login);
 
+// get request for authenticated user details
+//
+// returns user details
 app.get("/user", FBAuth, getAuthenticatedUser);
 
+// get request for specified user details
+//
+// returns specified user details
 app.get("/user/:handle", getUserDetails);
 
 exports.api = functions.https.onRequest(app);

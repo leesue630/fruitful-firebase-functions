@@ -6,10 +6,26 @@ exports.getAllFruits = (req, res) => {
     .get()
     .then((data) => {
       return res.json(
-        data.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id };
+        data.docs.map((doc, i) => {
+          return { ...doc.data(), id: doc.id, ranking: i + 1 };
         })
       );
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
+
+exports.getFruitById = (req, res) => {
+  db.doc(`/fruits/${req.params.fruitId}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        return res.json({ ...doc.data(), id: doc.id });
+      } else {
+        return res.status(404).json({ error: "Invalid fruit" });
+      }
     })
     .catch((err) => {
       console.error(err);
