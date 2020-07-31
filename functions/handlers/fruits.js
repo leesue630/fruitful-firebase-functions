@@ -2,7 +2,7 @@ const { db } = require("../util/admin");
 
 exports.getAllFruits = (req, res) => {
   db.collection("fruits")
-    .orderBy("name", "asc")
+    .orderBy("pickCount", "desc")
     .get()
     .then((data) => {
       return res.json(
