@@ -31,35 +31,35 @@ exports.createUser = (req, res) => {
     });
 };
 
-exports.login = (req, res) => {
-  let google_token = req.body.google_token;
-  // console.log("google_token: " + google_token);
-  let token;
-  // Build Firebase credential with the Google ID token.
-  const credential = firebase.auth.GoogleAuthProvider.credential(google_token);
+// exports.login = (req, res) => {
+//   let google_token = req.body.google_token;
+//   // console.log("google_token: " + google_token);
+//   let token;
+//   // Build Firebase credential with the Google ID token.
+//   const credential = firebase.auth.GoogleAuthProvider.credential(google_token);
 
-  // Sign in with credential from the Google user.
-  firebase
-    .auth()
-    .signInWithCredential(credential)
-    .catch((err) => {
-      console.error(err);
-      return res.status(400).json({ error: "login failed" });
-    })
-    .then((data) => {
-      token = data.user.getIdToken();
-      return db.collection("users").where("email", "==", data.user.email).get();
-    })
-    .then((doc) => {
-      if (doc.exists) {
-        // account with handle existed
-        return res.json({ token });
-      } else {
-        // user newly created
-        return res.status(201).json({ token });
-      }
-    });
-};
+//   // Sign in with credential from the Google user.
+//   firebase
+//     .auth()
+//     .signInWithCredential(credential)
+//     .catch((err) => {
+//       console.error(err);
+//       return res.status(400).json({ error: "login failed" });
+//     })
+//     .then((data) => {
+//       token = data.user.getIdToken();
+//       return db.collection("users").where("email", "==", data.user.email).get();
+//     })
+//     .then((doc) => {
+//       if (doc.exists) {
+//         // account with handle existed
+//         return res.json({ token });
+//       } else {
+//         // user newly created
+//         return res.status(201).json({ token });
+//       }
+//     });
+// };
 
 // Get any user's details
 exports.getUserDetails = (req, res) => {
