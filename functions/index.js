@@ -95,11 +95,9 @@ exports.incrementFruitPickCountOnUserUpdate = functions.firestore
       .catch((err) => console.error(err));
   });
 
-const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
-const PORT = process.env.PORT || 3000;
 
 const myOAuth2Client = new OAuth2(config.clientID, config.clientSecret);
 myOAuth2Client.setCredentials({
