@@ -1,5 +1,7 @@
 const functions = require("firebase-functions");
+const config = require("./util/config");
 const app = require("express")();
+
 const { admin, db } = require("./util/admin");
 
 const FBAuth = require("./util/fbAuth");
@@ -91,4 +93,49 @@ exports.incrementFruitPickCountOnUserUpdate = functions.firestore
         pickCount: admin.firestore.FieldValue.increment(1),
       })
       .catch((err) => console.error(err));
+  });
+
+const bodyParser = require("body-parser");
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
+const PORT = process.env.PORT || 3000;
+
+const myOAuth2Client = new OAuth2(config.clientID, config.clientSecret);
+myOAuth2Client.setCredentials({
+  refresh_token: config.refreshToken,
+});
+const myAccessToken = myOAuth2Client.getAccessToken();
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    type: "OAuth2",
+    user: config.email,
+    clientId: config.clientID,
+    clientSecret: config.clientSecret,
+    refreshToken: config.refreshToken,
+    accessToken: myAccessToken,
+  },
+});
+
+exports.sendEmailOnFruitRequest = functions.firestore
+  .document("fruit-requests/{id}")
+  .onCreate((snapshot) => {
+    const mailOptions = {
+      from: config.email,
+      to: config.email,
+      subject: "New Fruit Request | Fruitful Firebase",
+      text: `Fruit: ${snapshot.data().fruit}, User: ${
+        snapshot.data().userHandle
+      }`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
   });
